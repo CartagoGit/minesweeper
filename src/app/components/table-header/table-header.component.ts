@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { StateService } from '../../shared/services/state.service';
 
 @Component({
   selector: 'app-table-header',
@@ -9,5 +10,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableHeaderComponent {
-
+  constructor(public stateSvc: StateService) {}
 }
