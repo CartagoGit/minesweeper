@@ -4,7 +4,7 @@ import {
   IGameStatus,
   ISizeTable,
 } from '../interfaces/game.interface';
-import { Observable, Subscription, interval } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
