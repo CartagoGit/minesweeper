@@ -7,5 +7,5 @@ export interface ISizeTable {
 
 export interface ICellState {
   value: number | 'bomb' | 'empty';
-  state: 'visible' | 'hidden' | 'flagged';
+  state: 'visible' | 'hidden' | 'flag' | 'question';
 }

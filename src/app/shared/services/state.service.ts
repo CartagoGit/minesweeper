@@ -1,4 +1,11 @@
-import { Injectable, WritableSignal, computed, signal } from '@angular/core';
+import {
+  Injectable,
+  WritableSignal,
+  computed,
+  effect,
+  signal,
+  untracked,
+} from '@angular/core';
 import {
   ICellState,
   IGameStatus,
@@ -19,19 +26,16 @@ export class StateService {
     rows: 5,
     cols: 5,
   };
-  public sizeTable!: WritableSignal<ISizeTable>;
+  public sizeTable: WritableSignal<ISizeTable> = signal(this._minTable);
   public table: WritableSignal<ICellState[][]> = signal([]);
 
   // Bombs
   private _minBombs = 1;
   private _maxBombs = computed(() => {
     const { rows, cols } = this.sizeTable();
-    const maxBombs = Math.floor(rows * cols - 1);
-    if (this.bombs() > maxBombs || this.bombs() < this._minBombs)
-      this.bombs.set(this._getDefaultBombs());
     return Math.floor(rows * cols - 1);
   });
-  public bombs!: WritableSignal<number>;
+  public bombs: WritableSignal<number> = signal(0);
 
   // Points
   public maxPoints = signal(0);
@@ -50,8 +54,20 @@ export class StateService {
   // ANCHOR : Constructor
   constructor(private _localstorageSvc: LocalStorageService) {
     this._getDataFromLocalStorage();
-    this.table.set(this._createTable());
+    effect(
+      () => {
+        const bombs = untracked(this.bombs);
+        if (bombs > this._maxBombs() || bombs < this._minBombs)
+          this.bombs.set(this._getDefaultBombs());
+      },
+      { allowSignalWrites: true }
+    );
   }
+
+  ngOnInit(): void {
+    this.table.set(this._newEmptyTable());
+  }
+
   // ANCHOR : Methods
 
   private _getDataFromLocalStorage(): void {
@@ -75,7 +91,7 @@ export class StateService {
 
   private _getDefaultBombs(): number {
     const { rows, cols } = this.sizeTable();
-    return Math.floor((rows * cols) / 3);
+    return Math.floor((rows * cols) / 5);
   }
 
   private _createTable(): ICellState[][] {

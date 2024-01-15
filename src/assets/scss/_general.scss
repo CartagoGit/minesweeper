@@ -71,6 +71,18 @@ button {
   place-items: center;
   transition: ease 0.2s all;
   box-sizing: border-box;
+  user-select: none;
+  &--not-visible{
+    cursor: pointer;
+    border: 3px solid var(--gray-800);
+    border-color: var(--border-color-exterior);
+    &:active{
+      border-color: var(--border-color-interior);
+    }
+    &:hover{
+      background-color: var(--gray-500);
+    }
+  }
 }
 
 .piece {
