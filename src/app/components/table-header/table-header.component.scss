@@ -36,11 +36,12 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: ease 0.2s all;
   box-sizing: border-box;
   font-size: 22px;
+  transition: ease 0.2s all;
 
   &::before {
+    transition: ease 0.2s all;
     content: "🙂";
     box-sizing: border-box;
 

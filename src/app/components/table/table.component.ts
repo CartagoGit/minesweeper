@@ -9,12 +9,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent {
-  private _minTable = {
-    x: 5,
-    y: 5,
-  };
-  public table = { ...this._minTable };
-
+  
   constructor() {}
 
   public createTable(data: { x: number; y: number }) {}
