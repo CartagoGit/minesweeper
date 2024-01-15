@@ -80,11 +80,7 @@ export class StateService {
 
   private _createTable(): ICellState[][] {
     const { rows, cols } = this.sizeTable();
-    const table = new Array(rows)
-      .fill([])
-      .map(() =>
-        new Array<ICellState>(cols).fill({ value: 'empty', state: 'hidden' })
-      );
+    const table = this._newEmptyTable();
     let settedBombs = this.bombs();
     while (settedBombs > 0) {
       const randomRow = Math.floor(Math.random() * rows);
@@ -111,28 +107,41 @@ export class StateService {
     return table;
   }
 
+  private _newEmptyTable(): ICellState[][] {
+    const { rows, cols } = this.sizeTable();
+    const table: ICellState[][] = new Array(rows)
+      .fill([])
+      .map(() =>
+        new Array<ICellState>(cols).fill({ value: 'empty', state: 'hidden' })
+      );
+    return table;
+  }
+
+  // ANCHOR : Public Methods
+
+  public resetGame(): void {
+    this.stopGame('paused');
+    this.table.set(this._newEmptyTable());
+  }
+
   public startGame(): void {
     this.gameStatus = 'playing';
+    this.table.set(this._createTable());
 
     this.inervalSubscription = interval(1000).subscribe(() =>
       this._gameTimeInt.set(this._gameTimeInt() + 1)
     );
   }
 
-  public stopGame(): void {
+  public stopGame(newStatus: Omit<IGameStatus, 'playing'>): void {
+    this.gameStatus = newStatus as IGameStatus;
     this.inervalSubscription?.unsubscribe();
+    this.inervalSubscription = undefined;
     this._gameTimeInt.set(0);
-    if (this.points > this.maxPoints) {
-      this.maxPoints = this.points;
+    if (this.points() > this.maxPoints()) {
+      this.maxPoints.set(this.points());
       this._localstorageSvc.saveMaxPoint(this.maxPoints());
     }
-    this.inervalSubscription = undefined;
     this.points.set(0);
-    this.table.set(this._createTable());
-  }
-
-  public resetStatus(): void {
-    this.gameStatus = 'paused';
-    this.stopGame();
   }
 }
