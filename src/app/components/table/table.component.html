@@ -2,7 +2,7 @@
 <div class="row">
   @for(cell of row; let colIndex = $index; track colIndex) { @if(cell.state ===
   'visible'){
-  <div class="cell">
+  <div class="cell" (contextmenu)="$event.preventDefault()">
     @if(cell.value === 'bomb'){
     {{ "💣" }}
     } @else if (cell.value !== 'empty') {
@@ -24,5 +24,14 @@
     }
   </div>
   } }
+</div>
+} @for(row of stateSvc.table();let rowIndex = $index; track rowIndex) {
+<div class="row">
+  @for(cell of row; let colIndex = $index; track colIndex) {
+
+  <div class="cell">
+    {{ cell.value }}
+  </div>
+  }
 </div>
 }

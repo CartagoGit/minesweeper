@@ -5,6 +5,11 @@ export interface ISizeTable {
   cols: number;
 }
 
+export interface IPosition {
+  row: number;
+  col: number;
+}
+
 export interface ICellState {
   value: number | 'bomb' | 'empty';
   state: 'visible' | 'hidden' | 'flag' | 'question';

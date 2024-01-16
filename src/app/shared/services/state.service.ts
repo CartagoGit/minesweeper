@@ -9,6 +9,7 @@ import {
 import {
   ICellState,
   IGameStatus,
+  IPosition,
   ISizeTable,
 } from '../interfaces/game.interface';
 import { Subscription, interval } from 'rxjs';
@@ -49,11 +50,12 @@ export class StateService {
   public inervalSubscription: Subscription | undefined = undefined;
 
   // Status
-  public gameStatus: IGameStatus = 'paused';
+  public gameStatus: WritableSignal<IGameStatus> = signal('paused');
 
   // ANCHOR : Constructor
   constructor(private _localstorageSvc: LocalStorageService) {
     this._getDataFromLocalStorage();
+    // MaxBombs effect
     effect(
       () => {
         const bombs = untracked(this.bombs);
@@ -117,7 +119,10 @@ export class StateService {
             if (table[i][j].value === 'bomb') counter++;
           }
         }
-        table[row][col] = { ...table[row][col], value: counter };
+        table[row][col] = {
+          ...table[row][col],
+          value: counter ? counter : 'empty',
+        };
       }
     }
     return table;
@@ -141,7 +146,7 @@ export class StateService {
   }
 
   public startGame(): void {
-    this.gameStatus = 'playing';
+    this.gameStatus.set('playing');
     this.table.set(this._createTable());
 
     this.inervalSubscription = interval(1000).subscribe(() =>
@@ -150,7 +155,7 @@ export class StateService {
   }
 
   public stopGame(newStatus: Omit<IGameStatus, 'playing'>): void {
-    this.gameStatus = newStatus as IGameStatus;
+    this.gameStatus.set(newStatus as IGameStatus);
     this.inervalSubscription?.unsubscribe();
     this.inervalSubscription = undefined;
     this._gameTimeInt.set(0);
@@ -159,5 +164,31 @@ export class StateService {
       this._localstorageSvc.saveMaxPoint(this.maxPoints());
     }
     this.points.set(0);
+  }
+
+  public showNearCells(position: IPosition): void {
+    const { rows, cols } = this.sizeTable();
+    const { row, col } = position;
+    let table = this.table();
+    let cell = table[row][col];
+    if (cell.state === 'visible') return;
+    cell.state = 'visible';
+    this.asignTable({ row, col, ...cell });
+    for (let i = row - 1; i <= row + 1; i++) {
+      if (i < 0 || i >= rows) continue;
+      for (let j = col - 1; j <= col + 1; j++) {
+        if (j < 0 || j >= cols) continue;
+        const nearCell = this.table()[i][j];
+        if (nearCell.state === 'visible') continue;
+        if (cell.value === 'empty') this.showNearCells({ row: i, col: j });
+      }
+    }
+  }
+
+  public asignTable(data: IPosition & ICellState): void {
+    const { row, col, ...cell } = data;
+    const table = this.table();
+    table[row][col] = cell;
+    this.table.set(table);
   }
 }

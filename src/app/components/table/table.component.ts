@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { StateService } from '../../shared/services/state.service';
 import { CommonModule } from '@angular/common';
+import { IPosition } from '../../shared/interfaces/game.interface';
 
 @Component({
   selector: 'app-table',
@@ -19,13 +20,24 @@ export class TableComponent {
   }
 
   // ANCHOR : Methods
-  public clickCell(data: { row: number; col: number }): void {
-    const { row, col } = data;
-    this.stateSvc.table()[row][col].state = 'visible';
+  public clickCell(position: IPosition): void {
+    const { row, col } = position;
+    const table = this.stateSvc.table();
+    const cell = table[row][col];
+    if (cell.value === 'empty') {
+      this.stateSvc.showNearCells(position);
+    } else {
+      cell.state = 'visible';
+      this.stateSvc.asignTable({ row, col, ...cell });
+    }
   }
 
-  public clickRightCell(data: { row: number; col: number, event: MouseEvent }): void {
-    const { row, col, event } = data;
+  public clickRightCell(
+    position: IPosition & {
+      event: MouseEvent;
+    }
+  ): void {
+    const { row, col, event } = position;
     event.preventDefault();
     const cell = this.stateSvc.table()[row][col];
     if (cell.state === 'hidden') cell.state = 'flag';
