@@ -24,11 +24,9 @@ export class TableComponent {
     const { row, col } = position;
     const table = this.stateSvc.table();
     const cell = table[row][col];
-    if (cell.value === 'empty') {
-      this.stateSvc.showNearCells(position);
-    } else {
-      cell.state = 'visible';
-    }
+    if (cell.value === 'empty') this.stateSvc.showNearCells(position);
+    else if (cell.value === 'bomb') this.stateSvc.stopGame('lost');
+    else cell.state = 'visible';
   }
 
   public clickRightCell(

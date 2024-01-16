@@ -1,1 +1,15 @@
-<p>footer works!</p>
+<section class="state">
+  <div class="status">Status: {{ stateSvc.gameStatus() | titlecase }}</div>
+
+  <div class="time">
+    Size: {{ stateSvc.sizeTable().rows }}x{{ stateSvc.sizeTable().cols }}
+  </div>
+</section>
+<section class="score">
+  <div class="points">Points: {{ stateSvc.points() }}</div>
+  <div class="max-points">Max points: {{ stateSvc.maxPoints() }}</div>
+</section>
+<section class="counters">
+  <div class="bombs">Bombs: {{ stateSvc.bombs() }}</div>
+  <div class="flags">Flags: {{ stateSvc.flags() }}</div>
+</section>
