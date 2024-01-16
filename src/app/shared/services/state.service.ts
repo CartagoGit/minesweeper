@@ -53,16 +53,23 @@ export class StateService {
   // Points
   public maxPoints = signal(0);
   public points = signal(0);
+  public ratePoints = computed(() => {
+    const { rows, cols } = this.sizeTable();
+    const sizeRate = (rows * cols) / 10;
+    const rate = Math.floor(this.bombs() / sizeRate);
+    return rate;
+  });
 
   // Timer
-  private _gameTimeInt = signal(0);
+  private _maxTime = 999;
+  private _gameTimeInt = signal(this._maxTime);
   public gameTime = computed(() =>
     this._gameTimeInt().toString().padStart(3, '0')
   );
   public inervalSubscription: Subscription | undefined = undefined;
 
   // Status
-  public gameStatus: WritableSignal<IGameStatus> = signal('stoped');
+  public gameStatus: WritableSignal<IGameStatus> = signal('playing');
   public isClicking = signal(false);
   public isRightClicking = signal(false);
   public cdTable: ChangeDetectorRef | undefined = undefined;
@@ -96,8 +103,18 @@ export class StateService {
     // Time lost
     effect(
       () => {
-        if (this.gameStatus() !== 'playing') return;
-        if (this._gameTimeInt() >= 999) this.stopGame('lost');
+        if (untracked(this.gameStatus) !== 'playing') return;
+        if (this._gameTimeInt() <= 0) this.stopGame('lost');
+      },
+      { allowSignalWrites: true }
+    );
+
+    // Points
+    effect(
+      () => {
+        if (untracked(this.gameStatus) !== 'playing') return;
+        const rate = untracked(this.ratePoints);
+        this.points.set(this.cleanedCells() * rate);
       },
       { allowSignalWrites: true }
     );
@@ -119,8 +136,8 @@ export class StateService {
 
   private _getValidSizeTable(size: ISizeTable | null): ISizeTable {
     const defaultSize = {
-      rows: 20,
-      cols: 50,
+      rows: 10,
+      cols: 10,
     };
     if (!size) return defaultSize;
     if (size.cols < this.minTable.cols || size.cols > this.maxTable.cols)
@@ -181,14 +198,14 @@ export class StateService {
 
   public startGame(): void {
     this.gameStatus.set('playing');
-    this._gameTimeInt.set(0);
+    this._gameTimeInt.set(this._maxTime);
     this.points.set(0);
     this.table.set(this._createTable());
     this.flags.set(0);
     this.cleanedCells.set(0);
 
     this.inervalSubscription = interval(1000).subscribe(() =>
-      this._gameTimeInt.set(this._gameTimeInt() + 1)
+      this._gameTimeInt.set(this._gameTimeInt() - 1)
     );
   }
 
@@ -196,6 +213,12 @@ export class StateService {
     this.gameStatus.set(newStatus);
     this.inervalSubscription?.unsubscribe();
     this.inervalSubscription = undefined;
+    if (newStatus === 'won') {
+      const playedPoints = this.points();
+      const totalPoints =
+        playedPoints + this._gameTimeInt() * this.ratePoints();
+      this.points.set(totalPoints);
+    }
     if (this.points() > this.maxPoints()) {
       this.maxPoints.set(this.points());
       this._localstorageSvc.saveMaxPoint(this.maxPoints());
