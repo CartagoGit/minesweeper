@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Injectable,
   WritableSignal,
   computed,
@@ -23,11 +24,15 @@ export class StateService {
   public readonly title = "Cartago's Minesweeper";
 
   // Table
-  private _minTable: ISizeTable = {
+  public minTable: ISizeTable = {
     rows: 5,
     cols: 5,
   };
-  public sizeTable: WritableSignal<ISizeTable> = signal(this._minTable);
+  public maxTable: ISizeTable = {
+    rows: 20,
+    cols: 50,
+  };
+  public sizeTable: WritableSignal<ISizeTable> = signal(this.minTable);
   public table: WritableSignal<ICellState[][]> = signal([]);
 
   // Bombs
@@ -57,7 +62,11 @@ export class StateService {
   public inervalSubscription: Subscription | undefined = undefined;
 
   // Status
-  public gameStatus: WritableSignal<IGameStatus> = signal('paused');
+  public gameStatus: WritableSignal<IGameStatus> = signal('stoped');
+  public isClicking = signal(false);
+  public isRightClicking = signal(false);
+  public cdTable: ChangeDetectorRef | undefined = undefined;
+  public cleanedCells = signal(0);
 
   // ANCHOR : Constructor
   constructor(private _localstorageSvc: LocalStorageService) {
@@ -68,6 +77,27 @@ export class StateService {
         const bombs = untracked(this.bombs);
         if (bombs > this._maxBombs() || bombs < this._minBombs)
           this.bombs.set(this._getDefaultBombs());
+      },
+      { allowSignalWrites: true }
+    );
+
+    // Won game
+    effect(
+      () => {
+        if (this.cleanedCells() === 0) return;
+        const { rows, cols } = untracked(this.sizeTable);
+        if (this.cleanedCells() === rows * cols - untracked(this.bombs)) {
+          this.stopGame('won');
+        }
+      },
+      { allowSignalWrites: true }
+    );
+
+    // Time lost
+    effect(
+      () => {
+        if (this.gameStatus() !== 'playing') return;
+        if (this._gameTimeInt() >= 999) this.stopGame('lost');
       },
       { allowSignalWrites: true }
     );
@@ -88,19 +118,21 @@ export class StateService {
   }
 
   private _getValidSizeTable(size: ISizeTable | null): ISizeTable {
-    if (!size)
-      return {
-        cols: 10,
-        rows: 10,
-      };
-    if (size.cols < this._minTable.cols) size.cols = this._minTable.cols;
-    if (size.rows < this._minTable.rows) size.rows = this._minTable.rows;
+    const defaultSize = {
+      rows: 20,
+      cols: 50,
+    };
+    if (!size) return defaultSize;
+    if (size.cols < this.minTable.cols || size.cols > this.maxTable.cols)
+      size.cols = defaultSize.cols;
+    if (size.rows < this.minTable.rows || size.rows > this.maxTable.rows)
+      size.rows = defaultSize.rows;
     return size;
   }
 
   private _getDefaultBombs(): number {
     const { rows, cols } = this.sizeTable();
-    return Math.floor((rows * cols) / 5);
+    return Math.floor((rows * cols) / 5) || 1;
   }
 
   private _createTable(): ICellState[][] {
@@ -147,30 +179,39 @@ export class StateService {
 
   // ANCHOR : Public Methods
 
-  public resetGame(): void {
-    this.stopGame('paused');
-    this.table.set(this._newEmptyTable());
-  }
-
   public startGame(): void {
     this.gameStatus.set('playing');
+    this._gameTimeInt.set(0);
+    this.points.set(0);
     this.table.set(this._createTable());
+    this.flags.set(0);
+    this.cleanedCells.set(0);
 
     this.inervalSubscription = interval(1000).subscribe(() =>
       this._gameTimeInt.set(this._gameTimeInt() + 1)
     );
   }
 
-  public stopGame(newStatus: Omit<IGameStatus, 'playing'>): void {
-    this.gameStatus.set(newStatus as IGameStatus);
+  public async stopGame(newStatus: IGameStatus): Promise<void> {
+    this.gameStatus.set(newStatus);
     this.inervalSubscription?.unsubscribe();
     this.inervalSubscription = undefined;
-    this._gameTimeInt.set(0);
     if (this.points() > this.maxPoints()) {
       this.maxPoints.set(this.points());
       this._localstorageSvc.saveMaxPoint(this.maxPoints());
     }
-    this.points.set(0);
+    if (newStatus === 'won') return;
+
+    // Delay to show table slowly
+    const delayTime = 1;
+    for (let row of this.table()) {
+      for (let cell of row) {
+        if (cell.state === 'visible') continue;
+        await new Promise((resolve) => setTimeout(resolve, delayTime));
+        cell.state = 'visible';
+        this.cdTable?.detectChanges();
+      }
+    }
   }
 
   public showNearCells(position: IPosition): void {
@@ -179,6 +220,7 @@ export class StateService {
     let table = this.table();
     let cell = table[row][col];
     if (cell.state === 'visible') return;
+    this.cleanedCells.set(this.cleanedCells() + 1);
     cell.state = 'visible';
     for (let i = row - 1; i <= row + 1; i++) {
       if (i < 0 || i >= rows) continue;

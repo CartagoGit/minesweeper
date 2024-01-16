@@ -12,7 +12,21 @@
   }@else {
   <div
     class="cell cell--not-visible"
-    (click)="clickCell({ row: rowIndex, col: colIndex })"
+    (mouseup)="
+      stateSvc.isClicking.set(false); stateSvc.isRightClicking.set(false)
+    "
+    (mousedown)="
+      $event.button === 0
+        ? stateSvc.isClicking.set(true)
+        : stateSvc.isRightClicking.set(true)
+    "
+    (mouseleave)="
+      stateSvc.isClicking.set(false); stateSvc.isRightClicking.set(false)
+    "
+    (click)="
+      clickCell({ row: rowIndex, col: colIndex });
+      stateSvc.isClicking.set(false)
+    "
     (contextmenu)="
       clickRightCell({ row: rowIndex, col: colIndex, event: $event })
     "
@@ -24,14 +38,5 @@
     }
   </div>
   } }
-</div>
-} @for(row of stateSvc.table();let rowIndex = $index; track rowIndex) {
-<div class="row">
-  @for(cell of row; let colIndex = $index; track colIndex) {
-
-  <div class="cell">
-    {{ cell.value }}
-  </div>
-  }
 </div>
 }

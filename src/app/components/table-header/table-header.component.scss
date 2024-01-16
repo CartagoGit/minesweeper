@@ -26,7 +26,6 @@
   font-size: calc(1vh + 1vw);
   text-overflow: clip;
   white-space: nowrap;
-
 }
 
 .face {
@@ -39,12 +38,24 @@
   box-sizing: border-box;
   font-size: 22px;
   transition: ease 0.2s all;
-
+  &.click::before {
+    content: "😱" !important ;
+  }
+  &.right-click::before {
+    content: "😘" !important ;
+  }
+  &.lost::before {
+    content: "💀" !important ;
+  }
+  &.won::before {
+    content: "😎" !important ;
+  }
+  &.stopped::before {
+    content: "😴" !important ;
+  }
   &::before {
-    transition: ease 0.2s all;
     content: "🙂";
     box-sizing: border-box;
-
     position: absolute;
     border: var(--border);
     border-color: var(--border-color-exterior);

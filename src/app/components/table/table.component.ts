@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+} from '@angular/core';
 import { StateService } from '../../shared/services/state.service';
 import { CommonModule } from '@angular/common';
 import { IPosition } from '../../shared/interfaces/game.interface';
@@ -13,7 +17,9 @@ import { IPosition } from '../../shared/interfaces/game.interface';
 })
 export class TableComponent {
   // ANCHOR : Constructor
-  constructor(public stateSvc: StateService) {}
+  constructor(public stateSvc: StateService, private _cd: ChangeDetectorRef) {
+    this.stateSvc.cdTable = this._cd;
+  }
 
   ngOnInit(): void {
     this.stateSvc.startGame();
@@ -21,12 +27,16 @@ export class TableComponent {
 
   // ANCHOR : Methods
   public clickCell(position: IPosition): void {
+    if (this.stateSvc.gameStatus() !== 'playing') return;
     const { row, col } = position;
     const table = this.stateSvc.table();
     const cell = table[row][col];
     if (cell.value === 'empty') this.stateSvc.showNearCells(position);
     else if (cell.value === 'bomb') this.stateSvc.stopGame('lost');
-    else cell.state = 'visible';
+    else {
+      cell.state = 'visible';
+      this.stateSvc.cleanedCells.set(this.stateSvc.cleanedCells() + 1);
+    }
   }
 
   public clickRightCell(
@@ -36,6 +46,7 @@ export class TableComponent {
   ): void {
     const { row, col, event } = position;
     event.preventDefault();
+    if (this.stateSvc.gameStatus() !== 'playing') return;
     const cell = this.stateSvc.table()[row][col];
     if (cell.state === 'hidden') {
       this.stateSvc.flags.set(this.stateSvc.flags() + 1);

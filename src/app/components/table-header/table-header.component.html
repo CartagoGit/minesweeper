@@ -1,3 +1,13 @@
 <div class="flags">{{ stateSvc.diffBombsFlags() }}</div>
-<div class="face"></div>
+<div
+  class="face"
+  [ngClass]="{
+    lost: stateSvc.gameStatus() === 'lost',
+    won: stateSvc.gameStatus() === 'won',
+    stopped: stateSvc.gameStatus() === 'stoped',
+    click: stateSvc.isClicking(),
+    'right-click' : stateSvc.isRightClicking()
+  }"
+  (click)="clickFace()"
+></div>
 <div class="time">{{ stateSvc.gameTime() }}</div>
