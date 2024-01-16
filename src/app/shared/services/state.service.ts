@@ -25,8 +25,8 @@ export class StateService {
 
   // Table
   public minTable: ISizeTable = {
-    rows: 5,
-    cols: 5,
+    rows: 1,
+    cols: 1,
   };
   public maxTable: ISizeTable = {
     rows: 20,
