@@ -37,6 +37,13 @@ export class StateService {
     return Math.floor(rows * cols - 1);
   });
   public bombs: WritableSignal<number> = signal(0);
+  public flags = signal(0);
+  private _diffBombsFlags = computed(() => this.bombs() - this.flags());
+  public diffBombsFlags = computed(() => {
+    const diff = this._diffBombsFlags();
+    if (diff < 0) return `-${Math.abs(diff).toString().padStart(2, '0')}`;
+    else return this._diffBombsFlags().toString().padStart(3, '0');
+  });
 
   // Points
   public maxPoints = signal(0);
@@ -173,7 +180,6 @@ export class StateService {
     let cell = table[row][col];
     if (cell.state === 'visible') return;
     cell.state = 'visible';
-    this.asignTable({ row, col, ...cell });
     for (let i = row - 1; i <= row + 1; i++) {
       if (i < 0 || i >= rows) continue;
       for (let j = col - 1; j <= col + 1; j++) {
@@ -183,12 +189,5 @@ export class StateService {
         if (cell.value === 'empty') this.showNearCells({ row: i, col: j });
       }
     }
-  }
-
-  public asignTable(data: IPosition & ICellState): void {
-    const { row, col, ...cell } = data;
-    const table = this.table();
-    table[row][col] = cell;
-    this.table.set(table);
   }
 }

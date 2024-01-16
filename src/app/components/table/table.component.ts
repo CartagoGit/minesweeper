@@ -28,7 +28,6 @@ export class TableComponent {
       this.stateSvc.showNearCells(position);
     } else {
       cell.state = 'visible';
-      this.stateSvc.asignTable({ row, col, ...cell });
     }
   }
 
@@ -40,8 +39,12 @@ export class TableComponent {
     const { row, col, event } = position;
     event.preventDefault();
     const cell = this.stateSvc.table()[row][col];
-    if (cell.state === 'hidden') cell.state = 'flag';
-    else if (cell.state === 'flag') cell.state = 'question';
-    else if (cell.state === 'question') cell.state = 'hidden';
+    if (cell.state === 'hidden') {
+      this.stateSvc.flags.set(this.stateSvc.flags() + 1);
+      cell.state = 'flag';
+    } else if (cell.state === 'flag') {
+      this.stateSvc.flags.set(this.stateSvc.flags() - 1);
+      cell.state = 'question';
+    } else if (cell.state === 'question') cell.state = 'hidden';
   }
 }
