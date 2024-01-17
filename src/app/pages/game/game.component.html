@@ -7,4 +7,4 @@
 
 <app-footer />
 
-<app-modal-settings />
+<app-modal-settings [ngClass]="{'opacity-0': !stateSvc.showModal()}"/>

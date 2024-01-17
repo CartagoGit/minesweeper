@@ -1,7 +1,7 @@
 <main class="modal">
   <section class="modal__header">
     <span class="title">Settings</span>
-    <span class="close"><i class="ri-close-fill"></i></span>
+    <span class="close" (click)="stateSvc.showModal.set(false)"><i class="ri-close-fill"></i></span>
   </section>
   <section class="modal__body">
     <div class="content"></div>

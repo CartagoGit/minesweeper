@@ -88,3 +88,11 @@ button {
 .piece {
   border: 4px inset var(--gray-500);
 }
+
+.opacity-0 {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+.opacity-1 {
+  opacity: 1 !important;
+}

@@ -5,6 +5,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { StateService } from '../../shared/services/state.service';
 import { TableHeaderComponent } from '../../components/table-header/table-header.component';
 import { ModalSettingsComponent } from '../../components/modal-settings/modal-settings.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-game',
@@ -14,7 +15,8 @@ import { ModalSettingsComponent } from '../../components/modal-settings/modal-se
     TableHeaderComponent,
     TableComponent,
     FooterComponent,
-    ModalSettingsComponent
+    ModalSettingsComponent,
+    CommonModule
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
