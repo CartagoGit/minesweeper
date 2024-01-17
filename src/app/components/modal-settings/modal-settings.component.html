@@ -2,10 +2,33 @@
 <main class="modal">
   <section class="modal__header">
     <span class="title">Settings</span>
-    <span class="close" (click)="stateSvc.showModal.set(false)"><i class="ri-close-fill"></i></span>
+    <span class="close" (click)="stateSvc.showModal.set(false)"
+      ><i class="ri-close-fill"></i
+    ></span>
   </section>
   <section class="modal__body">
-    <div class="content"></div>
+    <div class="content">
+      <article class="field size">
+        <span class="label">Size:</span>
+        <span class="value">
+          <input type="number" [value]="stateSvc.sizeTable().rows" />
+          <span class="inter-inputs">x</span>
+          <input type="number" [value]="stateSvc.sizeTable().cols" />
+        </span>
+      </article>
+      <article class="field max-bombs">
+        <span class="label"> Max. Bombs: </span>
+        <span class="value">
+          {{ stateSvc.maxBombs() }}
+        </span>
+      </article>
+      <article class="field bombs">
+        <span class="label"> Bombs: </span>
+        <span class="value">
+          <input type="number" [value]="stateSvc.bombs()" />
+        </span>
+      </article>
+    </div>
   </section>
   <section class="modal__footer">
     <span class="save">

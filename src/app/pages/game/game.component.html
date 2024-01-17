@@ -1,10 +1,13 @@
-<app-header />
+<div class="game-container">
 
-<main>
-  <app-table-header />
-  <app-table />
-</main>
+  <app-header />
 
-<app-footer />
+  <main>
+    <app-table-header />
+    <app-table />
+  </main>
 
-<app-modal-settings [ngClass]="{'opacity-0': !stateSvc.showModal()}"/>
+  <app-footer />
+
+  <app-modal-settings [ngClass]="{'opacity-0': !stateSvc.showModal()}"/>
+</div>

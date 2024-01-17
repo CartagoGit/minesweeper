@@ -13,7 +13,6 @@
   z-index: 1;
 }
 
-
 .modal {
   z-index: 2;
   display: flex;
@@ -23,7 +22,7 @@
   border-radius: 5px;
   box-sizing: border-box;
   background-color: var(--gray-800);
-  min-width: 200px;
+  width: 300px;
   &__header,
   &__footer,
   &__body {
@@ -54,12 +53,27 @@
     padding: 10px;
     background-color: var(--gray-600);
     .content {
+      display: flex;
+      flex-direction: column;
+
+      font-size: 14px;
       background-color: var(--gray-500);
       box-sizing: border-box;
       width: 100%;
-      padding: 10px;
+
       border: var(--border);
       border-color: var(--border-color-interior);
+      .field {
+        background-color: var(--gray-600);
+        display: flex;
+        flex-direction: row;
+        padding: 5px 10px;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        border: var(--border);
+        border-color: var(--border-color-exterior);
+      }
     }
   }
   &__footer {

@@ -37,7 +37,7 @@ export class StateService {
 
   // Bombs
   private _minBombs = 1;
-  private _maxBombs = computed(() => {
+  public maxBombs = computed(() => {
     const { rows, cols } = this.sizeTable();
     return Math.floor(rows * cols - 1);
   });
@@ -74,7 +74,7 @@ export class StateService {
   public isRightClicking = signal(false);
   public cdTable: ChangeDetectorRef | undefined = undefined;
   public cleanedCells = signal(0);
-  public showModal = signal(false);
+  public showModal = signal(true);
 
   // ANCHOR : Constructor
   constructor(private _localstorageSvc: LocalStorageService) {
@@ -83,7 +83,7 @@ export class StateService {
     effect(
       () => {
         const bombs = untracked(this.bombs);
-        if (bombs > this._maxBombs() || bombs < this._minBombs)
+        if (bombs > this.maxBombs() || bombs < this._minBombs)
           this.bombs.set(this._getDefaultBombs());
       },
       { allowSignalWrites: true }

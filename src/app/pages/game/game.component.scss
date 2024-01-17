@@ -1,12 +1,18 @@
 :host {
   position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.game-container {
+  border-radius: 10px;
+  overflow: hidden;
   display: grid;
   grid-template-areas: "header" "main" "footer";
   background-color: var(--gray-600);
   border: 2px solid var(--gray-950);
-  border-radius: 10px;
-  overflow: hidden;
   box-shadow: var(--box-shadow);
+  box-sizing: border-box;
 }
 
 app-header,
@@ -81,5 +87,3 @@ app-modal-settings {
   transition: ease 0.3s all;
   opacity: 1;
 }
-
-

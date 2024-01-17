@@ -32,8 +32,10 @@ export class TableComponent {
     const table = this.stateSvc.table();
     const cell = table[row][col];
     if (cell.value === 'empty') this.stateSvc.showNearCells(position);
-    else if (cell.value === 'bomb') this.stateSvc.stopGame('lost');
-    else {
+    else if (cell.value === 'bomb') {
+      cell.value = 'explosion';
+      this.stateSvc.stopGame('lost');
+    } else {
       cell.state = 'visible';
       this.stateSvc.cleanedCells.set(this.stateSvc.cleanedCells() + 1);
     }

@@ -12,7 +12,7 @@ export interface IPosition {
 }
 
 export interface ICellState {
-  value: number | 'bomb' | 'empty';
+  value: number | 'bomb' | 'empty' | 'explosion';
   state: 'visible' | 'hidden' | 'flag' | 'question';
 }
 

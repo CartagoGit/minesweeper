@@ -5,7 +5,9 @@
   <div class="cell" (contextmenu)="$event.preventDefault()">
     @if(cell.value === 'bomb'){
     {{ "💣" }}
-    } @else if (cell.value !== 'empty') {
+    } @else if(cell.value === 'explosion'){
+    {{ "💥" }}
+    }@else if (cell.value !== 'empty') {
     {{ !!cell.value ? cell.value : " " }}
     }
   </div>
