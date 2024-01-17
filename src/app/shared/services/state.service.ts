@@ -74,6 +74,7 @@ export class StateService {
   public isRightClicking = signal(false);
   public cdTable: ChangeDetectorRef | undefined = undefined;
   public cleanedCells = signal(0);
+  public showModal = signal(false);
 
   // ANCHOR : Constructor
   constructor(private _localstorageSvc: LocalStorageService) {

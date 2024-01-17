@@ -4,6 +4,7 @@ import { TableComponent } from '../../components/table/table.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { StateService } from '../../shared/services/state.service';
 import { TableHeaderComponent } from '../../components/table-header/table-header.component';
+import { ModalSettingsComponent } from '../../components/modal-settings/modal-settings.component';
 
 @Component({
   selector: 'app-game',
@@ -13,6 +14,7 @@ import { TableHeaderComponent } from '../../components/table-header/table-header
     TableHeaderComponent,
     TableComponent,
     FooterComponent,
+    ModalSettingsComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
