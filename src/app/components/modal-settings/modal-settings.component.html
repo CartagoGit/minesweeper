@@ -2,36 +2,115 @@
 <main class="modal">
   <section class="modal__header">
     <span class="title">Settings</span>
-    <span class="close" (click)="stateSvc.showModal.set(false)"
+    <span class="close" (click)="cancelChanges()"
       ><i class="ri-close-fill"></i
     ></span>
   </section>
   <section class="modal__body">
     <div class="content">
+      <article class="field limit">
+        <div class="limit-field max-size">
+          <span class="label">Max. Size:</span>
+          <span class="value">
+            <input
+              type="number"
+              [value]="stateSvc.maxTable.rows"
+              [disabled]="true"
+            />
+            <span class="inter-inputs">x</span>
+            <input
+              type="number"
+              [value]="stateSvc.maxTable.cols"
+              [disabled]="true"
+            />
+          </span>
+        </div>
+        <div class="limit-field min-size">
+          <span class="label">Min. Size:</span>
+          <span class="value">
+            <input
+              type="number"
+              [value]="stateSvc.minTable.rows"
+              [disabled]="true"
+            />
+            <span class="inter-inputs">x</span>
+            <input
+              type="number"
+              [value]="stateSvc.minTable.cols"
+              [disabled]="true"
+            />
+          </span>
+        </div>
+      </article>
       <article class="field size">
         <span class="label">Size:</span>
         <span class="value">
-          <input type="number" [value]="stateSvc.sizeTable().rows" />
+          <input
+            type="number"
+            [value]="stateSvc.sizeTable().rows"
+            (keydown)="changeRows($event)"
+            [min]="stateSvc.minTable.rows"
+            [max]="stateSvc.maxTable.rows"
+          />
           <span class="inter-inputs">x</span>
-          <input type="number" [value]="stateSvc.sizeTable().cols" />
+          <input
+            type="number"
+            [value]="stateSvc.sizeTable().cols"
+            (keydown)="changeCols($event)"
+            [min]="stateSvc.minTable.cols"
+            [max]="stateSvc.maxTable.cols"
+          />
         </span>
       </article>
-      <article class="field max-bombs">
-        <span class="label"> Max. Bombs: </span>
-        <span class="value">
-          {{ stateSvc.maxBombs() }}
-        </span>
+      <article class="field limit">
+        <div class="limit-field max-bombs">
+          <span class="label"> Max. Bombs: </span>
+          <span class="value">
+            <input
+              type="number"
+              [value]="
+                stateSvc.maxBombs() <= 0
+                  ? 1
+                  : stateSvc.maxBombs() >= 999
+                  ? 999
+                  : stateSvc.maxBombs()
+              "
+              [disabled]="true"
+              [maxLength]="3"
+            />
+          </span>
+        </div>
+        <div class="limit-field min-bombs">
+          <span class="label"> Min. Bombs: </span>
+          <span class="value">
+            <input
+              type="number"
+              [value]="stateSvc.minBombs"
+              [disabled]="true"
+            />
+          </span>
+        </div>
       </article>
       <article class="field bombs">
         <span class="label"> Bombs: </span>
         <span class="value">
-          <input type="number" [value]="stateSvc.bombs()" />
+          <input
+            type="number"
+            [value]="stateSvc.bombs()"
+            (keydown)="changeBombs($event)"
+            [min]="stateSvc.minBombs"
+            [max]="stateSvc.maxBombs()"
+          />
         </span>
       </article>
     </div>
   </section>
   <section class="modal__footer">
-    <span class="save">
+    <span
+      class="save"
+      [ngClass]="{ disabled: !isValidForm() }"
+      (click)="saveChanges()"
+    >
       <span>Save</span>
       <span><i class="ri-save-line"></i></span>
     </span>

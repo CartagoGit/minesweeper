@@ -36,7 +36,7 @@ export class StateService {
   public table: WritableSignal<ICellState[][]> = signal([]);
 
   // Bombs
-  private _minBombs = 1;
+  public minBombs = 1;
   public maxBombs = computed(() => {
     const { rows, cols } = this.sizeTable();
     return Math.floor(rows * cols - 1);
@@ -83,7 +83,7 @@ export class StateService {
     effect(
       () => {
         const bombs = untracked(this.bombs);
-        if (bombs > this.maxBombs() || bombs < this._minBombs)
+        if (bombs > this.maxBombs() || bombs < this.minBombs)
           this.bombs.set(this._getDefaultBombs());
       },
       { allowSignalWrites: true }
