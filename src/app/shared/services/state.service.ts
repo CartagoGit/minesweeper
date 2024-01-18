@@ -79,7 +79,7 @@ export class StateService {
   public isRightClicking = signal(false);
   public cdTable: ChangeDetectorRef | undefined = undefined;
   public cleanedCells = signal(0);
-  public showModal = signal(true);
+  public showModal = signal(false);
 
   // ANCHOR : Constructor
   constructor(private _localstorageSvc: LocalStorageService) {
@@ -220,7 +220,7 @@ export class StateService {
       const playedPoints = this.points();
       const totalPoints =
         playedPoints + this._gameTimeInt() * this.ratePoints();
-      // this.points.set(totalPoints);
+      this.points.set(totalPoints);
     }
     if (this.points() > this.maxPoints()) {
       this.maxPoints.set(this.points());
