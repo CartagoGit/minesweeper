@@ -118,7 +118,7 @@ export class StateService {
     // Points
     effect(
       () => {
-        if (untracked(this.gameStatus) !== 'playing') return;
+        if (!['playing', 'won'].includes(untracked(this.gameStatus))) return;
         const rate = untracked(this.ratePoints);
         this.points.set(this.cleanedCells() * rate);
       },
@@ -220,7 +220,7 @@ export class StateService {
       const playedPoints = this.points();
       const totalPoints =
         playedPoints + this._gameTimeInt() * this.ratePoints();
-      this.points.set(totalPoints);
+      // this.points.set(totalPoints);
     }
     if (this.points() > this.maxPoints()) {
       this.maxPoints.set(this.points());
