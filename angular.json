@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
-            "outputPath": "dist/minesweeper/browser",
+            "outputPath": "dist/minesweeper",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
