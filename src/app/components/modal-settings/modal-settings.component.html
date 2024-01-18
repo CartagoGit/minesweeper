@@ -45,10 +45,11 @@
       <article class="field size">
         <span class="label">Size:</span>
         <span class="value">
+          <div class="default" (click)="defaultSize()">default</div>
           <input
             type="number"
             [value]="stateSvc.sizeTable().rows"
-            (keydown)="changeRows($event)"
+            (keyup)="changeRows($event)"
             [min]="stateSvc.minTable.rows"
             [max]="stateSvc.maxTable.rows"
           />
@@ -56,7 +57,7 @@
           <input
             type="number"
             [value]="stateSvc.sizeTable().cols"
-            (keydown)="changeCols($event)"
+            (keyup)="changeCols($event)"
             [min]="stateSvc.minTable.cols"
             [max]="stateSvc.maxTable.cols"
           />
@@ -94,10 +95,11 @@
       <article class="field bombs">
         <span class="label"> Bombs: </span>
         <span class="value">
+          <div class="default" (click)="defaultBombs()">default</div>
           <input
             type="number"
             [value]="stateSvc.bombs()"
-            (keydown)="changeBombs($event)"
+            (keyup)="changeBombs($event)"
             [min]="stateSvc.minBombs"
             [max]="stateSvc.maxBombs()"
           />

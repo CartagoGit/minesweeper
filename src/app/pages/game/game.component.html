@@ -1,5 +1,4 @@
 <div class="game-container">
-
   <app-header />
 
   <main>
@@ -8,6 +7,6 @@
   </main>
 
   <app-footer />
-
-  <app-modal-settings [ngClass]="{'opacity-0': !stateSvc.showModal()}"/>
 </div>
+
+<app-modal-settings [ngClass]="{ 'opacity-0': !stateSvc.showModal() }" />

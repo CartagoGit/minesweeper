@@ -1,8 +1,6 @@
 :host {
-  position: relative;
   border-radius: 10px;
-  overflow: hidden;
-  border-radius: 10px;
+  transition: ease 0.2s all;
 }
 .game-container {
   border-radius: 10px;
@@ -30,6 +28,10 @@ app-header {
   border-bottom: 1px solid var(--gray-700);
   box-shadow: var(--box-shadow);
   font-size: 24px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 main {

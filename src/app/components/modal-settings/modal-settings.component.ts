@@ -24,9 +24,11 @@ export class ModalSettingsComponent {
     const maxBombs = sigMaxBombs();
     const bombs = signBombs();
     const { rows, cols } = signSizeTable();
+    const size = rows * cols;
+    if (size <= 1) return false;
     if (rows < minRows || cols < minCols || bombs < minBombs) return false;
     if (rows > maxRows || cols > maxCols || bombs > maxBombs) return false;
-    if (rows * cols <= bombs) return false;
+    if (size <= bombs) return false;
     return true;
   });
 
@@ -45,7 +47,7 @@ export class ModalSettingsComponent {
   // ANCHOR: Methods
   private _limitLength(event: Event): string {
     const target = event.target as HTMLInputElement;
-    target.value = target.value.slice(0, 2);
+    target.value = target.value.slice(0, 3);
     const { value } = target;
     return value;
   }
@@ -69,8 +71,8 @@ export class ModalSettingsComponent {
     if (!this.isValidForm()) return;
     this._localStorageSvc.saveBombs(this.stateSvc.bombs());
     this._localStorageSvc.saveTableSize(this.stateSvc.sizeTable());
-    this.stateSvc.stopGame('stoped');
     this.stateSvc.showModal.set(false);
+    this.stateSvc.startGame();
   }
 
   public cancelChanges(): void {
@@ -78,5 +80,14 @@ export class ModalSettingsComponent {
     this.stateSvc.sizeTable.set({ rows, cols });
     this.stateSvc.bombs.set(bombs);
     this.stateSvc.showModal.set(false);
+  }
+
+  public defaultBombs(): void {
+    this.stateSvc.bombs.set(this.stateSvc.getDefaultBombs());
+  }
+
+  public defaultSize(): void {
+    const { rows, cols } = this.stateSvc.defaultSize;
+    this.stateSvc.sizeTable.set({ rows, cols });
   }
 }

@@ -32,6 +32,10 @@ export class StateService {
     rows: 20,
     cols: 50,
   };
+  public defaultSize: ISizeTable = {
+    rows: 10,
+    cols: 10,
+  };
   public sizeTable: WritableSignal<ISizeTable> = signal(this.minTable);
   public table: WritableSignal<ICellState[][]> = signal([]);
 
@@ -39,7 +43,8 @@ export class StateService {
   public minBombs = 1;
   public maxBombs = computed(() => {
     const { rows, cols } = this.sizeTable();
-    return Math.floor(rows * cols - 1);
+    const result = Math.floor(rows * cols - 1);
+    return result > 0 ? result : 1;
   });
   public bombs: WritableSignal<number> = signal(0);
   public flags = signal(0);
@@ -84,7 +89,7 @@ export class StateService {
       () => {
         const bombs = untracked(this.bombs);
         if (bombs > this.maxBombs() || bombs < this.minBombs)
-          this.bombs.set(this._getDefaultBombs());
+          this.bombs.set(this.getDefaultBombs());
       },
       { allowSignalWrites: true }
     );
@@ -136,10 +141,7 @@ export class StateService {
   }
 
   private _getValidSizeTable(size: ISizeTable | null): ISizeTable {
-    const defaultSize = {
-      rows: 10,
-      cols: 10,
-    };
+    const defaultSize = this.defaultSize;
     if (!size) return defaultSize;
     if (size.cols < this.minTable.cols || size.cols > this.maxTable.cols)
       size.cols = defaultSize.cols;
@@ -148,7 +150,7 @@ export class StateService {
     return size;
   }
 
-  private _getDefaultBombs(): number {
+  public getDefaultBombs(): number {
     const { rows, cols } = this.sizeTable();
     return Math.floor((rows * cols) / 5) || 1;
   }
